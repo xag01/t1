@@ -23,7 +23,7 @@
       height: 300px;
       max-width: 90vw;
       max-height: 90vh;
-      background-image: url('hearts-bg.png');
+      background-image: url('YOUR_BACKGROUND_IMAGE_URL');
       background-size: cover;
       background-position: center;
       border-radius: 15px;
@@ -46,12 +46,14 @@
       transition: transform 0.3s ease, opacity 0.3s ease;
     }
 
-    #popupText {
+    .popupText {
       position: absolute;
       font-family: sans-serif;
-      font-size: 2rem;       /* bigger text */
-      color: #fff;
-      text-shadow: 1px 1px 6px rgba(0,0,0,0.7);
+      font-size: 2rem;
+      color: #e63946; /* Valentines red */
+      background-color: rgba(255, 255, 255, 0.8); /* semi-transparent background for readability */
+      padding: 5px 10px;
+      border-radius: 10px;
       display: none;
       z-index: 10;
       text-align: center;
@@ -62,59 +64,61 @@
 </head>
 <body>
   <div id="widgetBox"></div>
-  <img id="catGif" src="https://i.pinimg.com/originals/c2/66/46/c26646ca9bd0a682a8561a81a49290bf.gif" alt="Cat GIF">
-  <div id="popupText">I love you!!!<333 Will you be my valentine?</div>
-  <audio id="meowSound" src="sound_garage-cat-meow-7-fx-306186.mp3"></audio>
+  <img id="catGif" src="YOUR_CAT_GIF_URL" alt="Cat GIF">
+  <div id="textAbove" class="popupText">Hello Sweetheart! ❤️</div>
+  <div id="textBelow" class="popupText">Meow! 🐱</div>
+  <audio id="meowSound" src="YOUR_MEOW_AUDIO_URL"></audio>
 
   <script>
     const widget = document.getElementById('widgetBox');
     const catGif = document.getElementById('catGif');
-    const popupText = document.getElementById('popupText');
+    const textAbove = document.getElementById('textAbove');
+    const textBelow = document.getElementById('textBelow');
     const meowSound = document.getElementById('meowSound');
 
-    widget.addEventListener('click', () => {
-      // Play sound
-      meowSound.currentTime = 0;
-      meowSound.play();
+    let isVisible = false; // track if cat+text are visible
 
-      // Get widget center
+    widget.addEventListener('click', () => {
       const widgetRect = widget.getBoundingClientRect();
       const centerX = widgetRect.left + widgetRect.width / 2;
       const centerY = widgetRect.top + widgetRect.height / 2;
 
-      // Show cat GIF centered
-      catGif.style.left = `${centerX - 100}px`; // 100 = half of GIF width
-      catGif.style.top = `${centerY - 100}px`;
-      catGif.style.display = 'block';
-      catGif.style.transform = 'scale(0.5)';
-      catGif.style.opacity = '0';
-      requestAnimationFrame(() => {
+      if (!isVisible) {
+        // Show cat GIF
+        catGif.style.left = `${centerX - 100}px`;
+        catGif.style.top = `${centerY - 100}px`;
+        catGif.style.display = 'block';
         catGif.style.transform = 'scale(1)';
         catGif.style.opacity = '1';
-      });
 
-      // Show popup text just below the cat
-      popupText.style.left = `${centerX}px`;
-      popupText.style.top = `${centerY + 120}px`; // 120px below center of cat
-      popupText.style.display = 'block';
-      popupText.style.transform = 'translateX(-50%) scale(0.5)';
-      popupText.style.opacity = '0';
-      requestAnimationFrame(() => {
-        popupText.style.transform = 'translateX(-50%) scale(1)';
-        popupText.style.opacity = '1';
-      });
+        // Show text above
+        textAbove.style.left = `${centerX}px`;
+        textAbove.style.top = `${centerY - 140}px`; // above cat
+        textAbove.style.display = 'block';
+        textAbove.style.transform = 'translateX(-50%) scale(1)';
+        textAbove.style.opacity = '1';
 
-      // Hide both after 2 seconds
-      setTimeout(() => {
-        catGif.style.display = 'none';
-        popupText.style.display = 'none';
-      }, 2000);
+        // Show text below
+        textBelow.style.left = `${centerX}px`;
+        textBelow.style.top = `${centerY + 120}px`; // below cat
+        textBelow.style.display = 'block';
+        textBelow.style.transform = 'translateX(-50%) scale(1)';
+        textBelow.style.opacity = '1';
 
-      // Small pop animation for the widget
+        isVisible = true;
+      } else {
+        // Replay sound and optional cat animation
+        catGif.style.transform = 'scale(0.9)';
+        setTimeout(() => { catGif.style.transform = 'scale(1)'; }, 150);
+      }
+
+      // Play sound every click
+      meowSound.currentTime = 0;
+      meowSound.play();
+
+      // Small pop animation for the widget itself
       widget.style.transform = 'scale(1.05)';
-      setTimeout(() => {
-        widget.style.transform = 'scale(1)';
-      }, 150);
+      setTimeout(() => { widget.style.transform = 'scale(1)'; }, 150);
     });
 
     // Keep box responsive if app window resizes
