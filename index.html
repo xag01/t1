@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cat Widget Test</title>
+  <title>Cat Widget</title>
   <style>
-    /* Make the body take up the full window, remove scrollbars */
     html, body {
       margin: 0;
       padding: 0;
@@ -18,72 +17,107 @@
       background-color: #f0f0f0; /* fallback background */
     }
 
-    /* The responsive widget box */
     #widgetBox {
       position: relative;
-      width: 300px;       /* default width */
-      height: 300px;      /* default height */
+      width: 300px;
+      height: 300px;
       max-width: 90vw;
       max-height: 90vh;
-      background-image: url('hearts-bg.png');
+      background-image: url('YOUR_BACKGROUND_IMAGE_URL');
       background-size: cover;
       background-position: center;
       border-radius: 15px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
       cursor: pointer;
-      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
       transition: transform 0.2s ease;
+      flex-direction: column;
     }
 
-    /* Pop-up cat GIF */
     #catGif {
       position: absolute;
-      width: 100px;
-      height: 100px;
+      width: 200px;
+      height: 200px;
       display: none;
       pointer-events: none;
+      z-index: 10;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    #popupText {
+      position: absolute;
+      font-family: sans-serif;
+      font-size: 2rem;       /* bigger text */
+      color: #fff;
+      text-shadow: 1px 1px 6px rgba(0,0,0,0.7);
+      display: none;
+      z-index: 10;
+      text-align: center;
+      white-space: nowrap;
+      transition: transform 0.3s ease, opacity 0.3s ease;
     }
   </style>
 </head>
 <body>
   <div id="widgetBox"></div>
-  <img id="catGif" src="https://i.pinimg.com/originals/c2/66/46/c26646ca9bd0a682a8561a81a49290bf.gif" alt="Cat GIF">
-  <audio id="meowSound" src="sound_garage-cat-meow-7-fx-306186.mp3"></audio>
+  <img id="catGif" src="YOUR_CAT_GIF_URL" alt="Cat GIF">
+  <div id="popupText">Meow! 🐱</div>
+  <audio id="meowSound" src="YOUR_MEOW_AUDIO_URL"></audio>
 
   <script>
     const widget = document.getElementById('widgetBox');
     const catGif = document.getElementById('catGif');
+    const popupText = document.getElementById('popupText');
     const meowSound = document.getElementById('meowSound');
 
-    widget.addEventListener('click', (e) => {
+    widget.addEventListener('click', () => {
       // Play sound
       meowSound.currentTime = 0;
       meowSound.play();
 
-      // Show cat GIF at a random position inside the box
-      const boxRect = widget.getBoundingClientRect();
-      const x = Math.random() * (boxRect.width - 100);
-      const y = Math.random() * (boxRect.height - 100);
-      catGif.style.left = `${boxRect.left + x}px`;
-      catGif.style.top = `${boxRect.top + y}px`;
-      catGif.style.display = 'block';
+      // Get widget center
+      const widgetRect = widget.getBoundingClientRect();
+      const centerX = widgetRect.left + widgetRect.width / 2;
+      const centerY = widgetRect.top + widgetRect.height / 2;
 
-      // Hide after 1.5 seconds
+      // Show cat GIF centered
+      catGif.style.left = `${centerX - 100}px`; // 100 = half of GIF width
+      catGif.style.top = `${centerY - 100}px`;
+      catGif.style.display = 'block';
+      catGif.style.transform = 'scale(0.5)';
+      catGif.style.opacity = '0';
+      requestAnimationFrame(() => {
+        catGif.style.transform = 'scale(1)';
+        catGif.style.opacity = '1';
+      });
+
+      // Show popup text just below the cat
+      popupText.style.left = `${centerX}px`;
+      popupText.style.top = `${centerY + 120}px`; // 120px below center of cat
+      popupText.style.display = 'block';
+      popupText.style.transform = 'translateX(-50%) scale(0.5)';
+      popupText.style.opacity = '0';
+      requestAnimationFrame(() => {
+        popupText.style.transform = 'translateX(-50%) scale(1)';
+        popupText.style.opacity = '1';
+      });
+
+      // Hide both after 2 seconds
       setTimeout(() => {
         catGif.style.display = 'none';
-      }, 1500);
+        popupText.style.display = 'none';
+      }, 2000);
 
-      // Optional: small pop animation
+      // Small pop animation for the widget
       widget.style.transform = 'scale(1.05)';
       setTimeout(() => {
         widget.style.transform = 'scale(1)';
       }, 150);
     });
 
-    // Optional: Make box resizable on desktop app mode
+    // Keep box responsive if app window resizes
     window.addEventListener('resize', () => {
       const width = Math.min(window.innerWidth * 0.9, 400);
       const height = Math.min(window.innerHeight * 0.9, 400);
