@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Meta tags for Mac Safari "Add as App" behavior -->
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cat Widget</title>
+
   <style>
     html, body {
       margin: 0;
@@ -17,7 +15,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #f0f0f0; /* fallback background */
+      background-color: #f0f0f0;
     }
 
     #widgetBox {
@@ -26,7 +24,7 @@
       height: 300px;
       max-width: 90vw;
       max-height: 90vh;
-      background-image: url('hearts-bg.png');
+      background-image: url('YOUR_BACKGROUND_IMAGE_URL');
       background-size: cover;
       background-position: center;
       border-radius: 15px;
@@ -53,8 +51,8 @@
       position: absolute;
       font-family: sans-serif;
       font-size: 2rem;
-      color: #e63946; /* Valentines red */
-      background-color: rgba(255, 255, 255, 0.8); /* semi-transparent background for readability */
+      color: #e63946;
+      background-color: rgba(255, 255, 255, 0.8);
       padding: 5px 10px;
       border-radius: 10px;
       display: none;
@@ -63,14 +61,33 @@
       white-space: nowrap;
       transition: transform 0.3s ease, opacity 0.3s ease;
     }
+
+    /* Smaller Rising Image */
+    #risingImage {
+      position: fixed;
+      width: 100px; /* smaller size */
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -150px; /* hidden below screen */
+      opacity: 0;
+      z-index: 20;
+      pointer-events: none;
+      transition: bottom 1.8s ease-out, opacity 0.8s ease-in;
+    }
   </style>
 </head>
+
 <body>
+
   <div id="widgetBox"></div>
-  <img id="catGif" src="https://i.pinimg.com/originals/c2/66/46/c26646ca9bd0a682a8561a81a49290bf.gif" alt="Cat GIF">
-  <div id="textAbove" class="popupText">I love you wreny!!!❤️❤️❤️</div>
-  <div id="textBelow" class="popupText">Will you be my valentine?</div>
-  <audio id="meowSound" src="sound_garage-cat-meow-7-fx-306186.mp3"></audio>
+
+  <img id="catGif" src="YOUR_CAT_GIF_URL" alt="Cat GIF">
+  <div id="textAbove" class="popupText">Hello Sweetheart! ❤️</div>
+  <div id="textBelow" class="popupText">Meow! 🐱</div>
+  <audio id="meowSound" src="YOUR_MEOW_AUDIO_URL"></audio>
+
+  <!-- Rising image -->
+  <img id="risingImage" src="YOUR_RISING_IMAGE_URL" alt="Rising Image">
 
   <script>
     const widget = document.getElementById('widgetBox');
@@ -78,8 +95,10 @@
     const textAbove = document.getElementById('textAbove');
     const textBelow = document.getElementById('textBelow');
     const meowSound = document.getElementById('meowSound');
+    const risingImage = document.getElementById('risingImage');
 
-    let isVisible = false; // track if cat+text are visible
+    let isVisible = false;
+    let risingTriggered = false;
 
     widget.addEventListener('click', () => {
       const widgetRect = widget.getBoundingClientRect();
@@ -87,44 +106,58 @@
       const centerY = widgetRect.top + widgetRect.height / 2;
 
       if (!isVisible) {
-        // Show cat GIF
+        // Show cat
         catGif.style.left = `${centerX - 100}px`;
         catGif.style.top = `${centerY - 100}px`;
         catGif.style.display = 'block';
-        catGif.style.transform = 'scale(1)';
         catGif.style.opacity = '1';
 
-        // Show text above
+        // Text above
         textAbove.style.left = `${centerX}px`;
-        textAbove.style.top = `${centerY - 180}px`; // above cat
+        textAbove.style.top = `${centerY - 140}px`;
         textAbove.style.display = 'block';
-        textAbove.style.transform = 'translateX(-50%) scale(1)';
+        textAbove.style.transform = 'translateX(-50%)';
         textAbove.style.opacity = '1';
 
-        // Show text below
+        // Text below
         textBelow.style.left = `${centerX}px`;
-        textBelow.style.top = `${centerY + 120}px`; // below cat
+        textBelow.style.top = `${centerY + 120}px`;
         textBelow.style.display = 'block';
-        textBelow.style.transform = 'translateX(-50%) scale(1)';
+        textBelow.style.transform = 'translateX(-50%)';
         textBelow.style.opacity = '1';
 
         isVisible = true;
+
+        // Rising image after 5 seconds (only once)
+        if (!risingTriggered) {
+          risingTriggered = true;
+
+          setTimeout(() => {
+            const textRect = textBelow.getBoundingClientRect();
+
+            // Stop just below bottom text (tight spacing)
+            const stopPosition = window.innerHeight - textRect.bottom - 10;
+
+            risingImage.style.bottom = stopPosition + 'px';
+            risingImage.style.opacity = '1';
+          }, 5000);
+        }
+
       } else {
-        // Replay sound and optional cat animation
+        // Small bounce on repeat click
         catGif.style.transform = 'scale(0.9)';
         setTimeout(() => { catGif.style.transform = 'scale(1)'; }, 150);
       }
 
-      // Play sound every click
+      // Play sound
       meowSound.currentTime = 0;
       meowSound.play();
 
-      // Small pop animation for the widget itself
+      // Widget pop
       widget.style.transform = 'scale(1.05)';
       setTimeout(() => { widget.style.transform = 'scale(1)'; }, 150);
     });
 
-    // Keep box responsive if app window resizes
     window.addEventListener('resize', () => {
       const width = Math.min(window.innerWidth * 0.9, 400);
       const height = Math.min(window.innerHeight * 0.9, 400);
@@ -132,5 +165,6 @@
       widget.style.height = `${height}px`;
     });
   </script>
+
 </body>
 </html>
